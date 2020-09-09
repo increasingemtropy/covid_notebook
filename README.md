@@ -9,8 +9,10 @@ An R script that imports coronavrius data from John Hopkins University and plots
 A python script that imports the same data and plots the same data range
  - The functions defined here import, clean and then streamline the data to relevant stats
  - Further, we can plot not only the raw data, but the growth rate of the virus based on these data
+ - Most of the calls to the plot command are currently in "if False" blocks, turn these to True to actually produce some plots
  
  Still TO DO:
+* Comments to explain what is happening in various blocks of code
 * Put everything into functions that can be called from a master script
 * Automate more of the graph settings (min, max, colours, ticks etc)
 
