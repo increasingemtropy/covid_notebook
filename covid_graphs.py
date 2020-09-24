@@ -58,8 +58,7 @@ def get_data(url, add_total=False, n_largest=None):
 
     return df
 
-def plot_data(df, title='', min=None, max=None, ylog=False, stack=False, subplot=111, fig=None, yticks=None, gf=False, timebase = 28):
-    # ax = df.plot(logy=True)
+def plot_data(df, title='', min=None, max=None, ylog=False, stack=False, subplot=111, fig=None, yticks=None, gf=False, timebase = 28,c_mark = False):
     
     # Create new fig
     if fig is None:
@@ -74,26 +73,22 @@ def plot_data(df, title='', min=None, max=None, ylog=False, stack=False, subplot
     y = df.to_numpy()
     
     # If the user wants a graph of Growth Rate, do some spooky mathemagic....
-    # After, x and y should contain something like the exponential growth rate (NOT R)
     # This part needs better commenting!
     if gf:
         x = x[2:]
         y = y[2:]
         x_t = x_t[2:]
-        # Get the y difference
         y = np.diff(y, axis=0)
         y = np.insert(y, 0, y[0],axis=0)
         y = np.insert(y, -1, y[-1], axis=0)
-        # Smooth it out
         y = convolve2d(y, [[0.25], [0.5], [0.25]], mode='valid')
-        # Find the difference of the log
         y = np.diff(np.log(y + 1e-3), axis=0)
         y = np.insert(y, 0, y[0],axis=0)
         y = np.insert(y, -1, y[-1], axis=0)
         y = convolve2d(y, [[0.25], [0.5], [0.25]], mode='valid')
         x = x[2:]
         x_t = x_t[2:]
-        print(x.shape, y.shape)
+        #print(x.shape, y.shape)
         
     if stack:
         ax.stackplot(x, y.transpose(), labels=df.columns)
@@ -128,13 +123,17 @@ def plot_data(df, title='', min=None, max=None, ylog=False, stack=False, subplot
                 z = np.polyfit(x_t[4:], y[4:, i], 1)
                 p = np.poly1d(z)
                 ax.plot(x, p(x_t), "--", color=line.get_color())
-
+        
         ax.legend(ax.get_lines(), df.columns, loc='upper left')
     
     # Set graph title
     ax.set_title(title)
     
     ax.yaxis.tick_right()
+    
+    # place a text box in upper left in axes coords
+    if c_mark:
+        ax.text(0.99, 0.05, "(c) E. Maitland 2020", transform=ax.transAxes, fontsize=8.5, va='top', ha='right') # , bbox=props)
     
     return ax
 
@@ -149,6 +148,7 @@ df3 = get_data(URL_D, n_largest=12, add_total=True)
 df4 = df3.diff()
 
 # If your internet connection is down, uncomment this to read saved data from the last session
+
 # df1 = pd.read_csv('conf.csv',index_col='Date')
 # df2 = pd.read_csv('conf_new.csv',index_col='Date')
 # df3 = pd.read_csv('dead.csv',index_col='Date')
